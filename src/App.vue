@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import NoteList from './components/NoteList.vue';
-import NoteEditor from './components/NoteEditor.vue';
+import NoteEditor from './NoteEditor.vue'
+import NoteList from './NoteList.vue'
 
 export default {
   name: 'App',
@@ -18,26 +18,38 @@ export default {
   data() {
     return {
       notes: [],
-      selectedNote: null, // Ajouté pour la gestion de la note sélectionnée pour modification
-      selectedIndex: null // Conserver l'index de la note sélectionnée
+      selectedNote: null,
+      selectedIndex: null
     }
   },
+  created() {
+    this.loadNotes();
+  },
   methods: {
+    loadNotes() {
+      const notes = localStorage.getItem('notes');
+      if (notes) {
+        this.notes = JSON.parse(notes);
+      }
+    },
+    saveNotes() {
+      localStorage.setItem('notes', JSON.stringify(this.notes));
+    },
     addOrUpdateNote(noteContent) {
       if (this.selectedNote && this.selectedIndex !== null) {
-        // Mise à jour de la note existante
         this.notes[this.selectedIndex].content = noteContent;
         this.resetSelection();
       } else if (noteContent.trim() !== '') {
-        // Ajout d'une nouvelle note
         this.notes.push({ content: noteContent });
       }
+      this.saveNotes();
     },
     deleteNote(index) {
       this.notes.splice(index, 1);
+      this.saveNotes();
     },
     editNote(index) {
-      this.selectedNote = { ...this.notes[index] }; // Cloner la note pour éviter les modifications directes
+      this.selectedNote = { ...this.notes[index] };
       this.selectedIndex = index;
     },
     resetSelection() {
@@ -49,5 +61,5 @@ export default {
 </script>
 
 <style>
-/* Votre CSS ici */
+
 </style>
